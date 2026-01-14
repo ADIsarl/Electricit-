@@ -1,6 +1,5 @@
 // --- VARIABLES GLOBALES ---
 let isTriphasé = false;
-let currentMeasure = null;
 
 // --- DOM ELEMENTS ---
 const uInput = document.getElementById('u-val');
@@ -9,58 +8,49 @@ const rInput = document.getElementById('r-val');
 const pInput = document.getElementById('p-val');
 const phaseToggle = document.getElementById('phase-toggle');
 
+const inputs = [uInput, iInput, rInput, pInput];
+
 // --- INIT ---
+// Gère le basculement Mono/Tri
 phaseToggle.addEventListener('change', () => {
     isTriphasé = phaseToggle.checked;
-    // Mise à jour de la tension par défaut
     if (!uInput.value || uInput.value == 230 || uInput.value == 400) {
         uInput.value = isTriphasé ? 400 : 230;
     }
-    calculate();
+    // On relance le calcul basé sur U et I si présents
+    if (uInput.value && iInput.value) calculate('u-val');
 });
 
-// Initialisation par défaut
+// Valeur par défaut
 uInput.value = 230; 
 
-// --- LOGIQUE CALCULATEUR ---
-const inputs = [uInput, iInput, rInput, pInput];
+// --- LOGIQUE INTELLIGENTE ---
+// On écoute chaque champ pour savoir Lequel est modifié
 inputs.forEach(input => {
-    input.addEventListener('input', calculate);
+    input.addEventListener('input', (e) => calculate(e.target.id));
 });
 
-function calculate() {
+function calculate(sourceId) {
     let u = parseFloat(uInput.value);
     let i = parseFloat(iInput.value);
     let r = parseFloat(rInput.value);
     let p = parseFloat(pInput.value);
+    const rac3 = 1.732; // Racine de 3
 
-    // Compter les valeurs entrées
-    let filled = 0;
-    if (u) filled++;
-    if (i) filled++;
-    if (r) filled++;
-    if (p) filled++;
+    // LOGIQUE DE PRIORITÉ : On calcule selon ce que l'utilisateur modifie
 
-    if (filled < 2) return; // Besoin de 2 valeurs min
-
-    // Facteur racine de 3 pour le triphasé (approx 1.732)
-    const rac3 = 1.732; 
-
-    // CALCULS (Simplifiés CosPhi = 1 pour l'exercice)
-    // Cas Mono : P = U*I, U = R*I
-    // Cas Tri : P = U * I * rac3 (U est la tension composée 400V)
-
-    // Si on a U et I
-    if (u && i && !p && !r) {
+    // CAS 1 : Tu modifies la TENSION (U) ou l'INTENSITÉ (I)
+    // -> On recalcule P et R
+    if ((sourceId === 'u-val' || sourceId === 'i-val') && u && i) {
         if (isTriphasé) pInput.value = (u * i * rac3).toFixed(2);
         else pInput.value = (u * i).toFixed(2);
         
-        // R est calculé généralement en mono sur la phase
-        // En tri, c'est plus complexe (Z), on simplifie U/I
         rInput.value = (u / i).toFixed(2);
     }
-    // Si on a P et U
-    else if (p && u && !i && !r) {
+
+    // CAS 2 : Tu modifies la PUISSANCE (P)
+    // -> On recalcule I et R (en gardant U fixe)
+    else if (sourceId === 'p-val' && u && p) {
         let iCalc;
         if (isTriphasé) iCalc = p / (u * rac3);
         else iCalc = p / u;
@@ -68,11 +58,13 @@ function calculate() {
         iInput.value = iCalc.toFixed(2);
         rInput.value = (u / iCalc).toFixed(2);
     }
-    // Si on a R et I (Loi d'ohm U = R*I est valable)
-    else if (r && i && !u && !p) {
+
+    // CAS 3 : Tu modifies la RÉSISTANCE (R)
+    // -> On recalcule U et P (loi d'ohm simple U=RI)
+    else if (sourceId === 'r-val' && r && i) {
         let uCalc = r * i;
         uInput.value = uCalc.toFixed(2);
-        
+
         if (isTriphasé) pInput.value = (uCalc * i * rac3).toFixed(2);
         else pInput.value = (uCalc * i).toFixed(2);
     }
@@ -83,7 +75,7 @@ function resetCalculator() {
     uInput.value = isTriphasé ? 400 : 230;
 }
 
-// --- NAVIGATION ---
+// --- NAVIGATION (Rien ne change ici) ---
 function showSection(id) {
     document.getElementById('calculator').classList.remove('active-section');
     document.getElementById('calculator').classList.add('hidden-section');
@@ -102,18 +94,17 @@ function showSection(id) {
 }
 
 // --- LOGIQUE MULTIMÈTRE ---
-
-// Configuration des coordonnées (TOP %, LEFT %) pour le cercle rouge
+// Mise à jour des coordonnées pour être pile sur tes photos
 const positions = {
     red: {
-        tension: { top: 88, left: 35 },     // Position V~ (estimée en bas à droite)
-        resistance: { top: 75, left: 20 },  // Position Ohm (estimée bas gauche)
-        intensite: { top: 20, left: 20 }    // Position 66A~ (estimée haut gauche)
+        tension: { top: 85, left: 70 },     
+        resistance: { top: 85, left: 30 }, 
+        intensite: { top: 25, left: 25 }   
     },
     yellow: {
-        tension: { top: 50, left: 50 },     // A ajuster selon ta photo jaune
-        resistance: { top: 60, left: 60 },
-        intensite: { top: 40, left: 40 }
+        tension: { top: 85, left: 50 },     
+        resistance: { top: 50, left: 15 },  
+        intensite: { top: 15, left: 50 }   
     }
 };
 
@@ -126,7 +117,6 @@ function selectMeasurement(type) {
     currentMeasure = type;
     document.getElementById('guide-display').classList.remove('hidden-section');
     document.getElementById('guide-display').classList.add('active-section');
-    
     updateGuideContent();
     updateMultimeterView();
 }
@@ -156,16 +146,12 @@ function updateGuideContent() {
 
 function updateMultimeterView() {
     if (!currentMeasure) return;
-
     const select = document.getElementById('multimeter-select');
-    const model = select.value; // 'red' ou 'yellow'
+    const model = select.value;
     const imgElement = document.getElementById('multimeter-img');
     const ring = document.getElementById('selector-ring');
-
-    // Changer l'image
+    
     imgElement.src = images[model];
-
-    // Positionner le cercle
     const coords = positions[model][currentMeasure];
     
     if (coords) {
