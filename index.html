@@ -61,13 +61,14 @@
             <button class="reset-btn" onclick="resetCalculator()">Réinitialiser</button>
         </section>
 
-        <section id="guide" class="hidden-section">
+      <section id="guide" class="hidden-section">
             <h2>Que veux-tu mesurer ?</h2>
             
             <div class="guide-choices">
                 <button onclick="selectMeasurement('tension')"><i class="fa-solid fa-plug"></i> Tension</button>
                 <button onclick="selectMeasurement('intensite')"><i class="fa-solid fa-bolt"></i> Intensité</button>
-                <button onclick="selectMeasurement('resistance')"><i class="fa-solid fa-omega"></i> Résist. / Continuité</button>
+                <button onclick="selectMeasurement('resistance')"><i class="fa-solid fa-omega"></i> Résistance</button>
+                <button onclick="selectMeasurement('capacite')"><i class="fa-solid fa-car-battery"></i> Condensateur</button>
             </div>
 
             <div id="guide-display" class="hidden-section">
@@ -86,7 +87,7 @@
                 <div id="safety-warning" class="warning-box"></div>
                 
                 <div id="component-selector-area" class="component-box hidden-section">
-                    <label>Quel composant tester ?</label>
+                    <label>Quel composant tester ? (Affiche les photos)</label>
                     <select id="component-select" onchange="showComponentImages()">
                         </select>
                 </div>
