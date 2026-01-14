@@ -17,7 +17,6 @@ phaseToggle.addEventListener('change', () => {
     if (!uInput.value || uInput.value == 230 || uInput.value == 400) {
         uInput.value = isTriphasé ? 400 : 230;
     }
-    // Relance le calcul
     if (iInput.value) calculate('i-val');
     else if (rInput.value) calculate('r-val');
 });
@@ -36,20 +35,17 @@ function calculate(sourceId) {
     let p = parseFloat(pInput.value);
     const rac3 = 1.732;
 
-    // Calcul basé sur Résistance
     if (sourceId === 'r-val' && r && u) {
         i = u / r;
         iInput.value = i.toFixed(2);
         if (isTriphasé) pInput.value = (u * i * rac3).toFixed(2);
         else pInput.value = (u * i).toFixed(2);
     } 
-    // Calcul basé sur Intensité ou Tension
     else if ((sourceId === 'i-val' || sourceId === 'u-val') && u && i) {
         if (isTriphasé) pInput.value = (u * i * rac3).toFixed(2);
         else pInput.value = (u * i).toFixed(2);
         rInput.value = (u / i).toFixed(2);
     } 
-    // Calcul basé sur Puissance
     else if (sourceId === 'p-val' && p && u) {
         if (isTriphasé) i = p / (u * rac3);
         else i = p / u;
@@ -64,15 +60,14 @@ function calculate(sourceId) {
 
 function updateCableSection(amp) {
     let section = "---";
-    // Normes standard domestique (Approximation)
     if (amp <= 10) section = "1.5 mm²";
     else if (amp <= 16) section = "1.5 mm² / 2.5 mm²";
     else if (amp <= 20) section = "2.5 mm²";
-    else if (amp <= 25) section = "4 mm²"; // Ajout du 4²
+    else if (amp <= 25) section = "4 mm²";
     else if (amp <= 32) section = "6 mm²";
     else if (amp <= 40) section = "10 mm²";
     else if (amp <= 63) section = "16 mm²";
-    else section = "> 16 mm² (Étude requise)";
+    else section = "> 16 mm²";
 
     cableOutput.innerText = section;
 }
@@ -101,18 +96,29 @@ function showSection(id) {
 
 // --- GUIDE MULTIMÈTRE ---
 const positions = {
-    red: { tension: { top: 85, left: 70 }, resistance: { top: 85, left: 30 }, intensite: { top: 25, left: 25 } },
-    yellow: { tension: { top: 75, left: 22 }, resistance: { top: 48, left: 12 }, intensite: { top: 12, left: 50 } }
+    red: { 
+        tension: { top: 85, left: 70 }, 
+        resistance: { top: 85, left: 30 }, 
+        intensite: { top: 25, left: 25 },
+        capacite: { top: 75, left: 80 } // Position approximative symbole condo
+    },
+    yellow: { 
+        tension: { top: 75, left: 22 }, 
+        resistance: { top: 48, left: 12 }, 
+        intensite: { top: 12, left: 50 },
+        capacite: { top: 48, left: 12 } // Souvent partagé avec Ohm sur les pinces
+    }
 };
 const images = { red: 'assets/red_multimeter.png', yellow: 'assets/yellow_multimeter.png' };
 
 const explanations = {
     tension: "Vérification de présence de tension. 230V entre Phase/Neutre. 400V entre Phases.",
     intensite: "Mesure du débit de courant (Ampérage). Toujours avec la pince autour d'UN SEUL fil.",
-    resistance: "Test de continuité (Bip) ou valeur ohmique. Toujours HORS TENSION."
+    resistance: "Test de continuité (Bip) ou valeur ohmique. Toujours HORS TENSION.",
+    capacite: "Mesure de la capacité (µF) des condensateurs. Déchargez le condensateur avant mesure !"
 };
 
-// Liste des composants pour le menu déroulant
+// Liste des composants
 const componentOptions = {
     tension: [
         {val: 'prise', label: 'Prise de courant'},
@@ -127,6 +133,11 @@ const componentOptions = {
     intensite: [
         {val: 'moteur', label: 'Moteur'},
         {val: 'tableau', label: 'Départ Tableau'}
+    ],
+    capacite: [
+        {val: 'demarrage', label: 'Condensateur Démarrage'},
+        {val: 'permanent', label: 'Condensateur Permanent'},
+        {val: 'carte', label: 'Composant électronique'}
     ]
 };
 
@@ -135,7 +146,7 @@ function selectMeasurement(type) {
     document.getElementById('guide-display').classList.remove('hidden-section');
     document.getElementById('guide-display').classList.add('active-section');
     document.getElementById('measure-info').classList.add('hidden');
-    document.getElementById('help-gallery').innerHTML = ""; // Vide galerie
+    document.getElementById('help-gallery').innerHTML = ""; 
     
     updateGuideContent();
     updateComponentSelector();
@@ -145,7 +156,7 @@ function selectMeasurement(type) {
 function updateComponentSelector() {
     const selectorArea = document.getElementById('component-selector-area');
     const select = document.getElementById('component-select');
-    select.innerHTML = "<option value=''>-- Choisir un élément --</option>";
+    select.innerHTML = "<option value=''>-- Choisir pour voir les photos --</option>";
 
     const opts = componentOptions[currentMeasure];
     if (opts) {
@@ -161,7 +172,7 @@ function updateComponentSelector() {
     }
 }
 
-// --- SYSTÈME AUTOMATIQUE D'IMAGES ---
+// AFFICHE LES IMAGES QUAND ON CHOISIT DANS LA LISTE
 function showComponentImages() {
     const comp = document.getElementById('component-select').value;
     const gallery = document.getElementById('help-gallery');
@@ -169,16 +180,13 @@ function showComponentImages() {
 
     if (!comp) return;
 
-    // Tente de charger les images de 1 à 6
     for (let i = 1; i <= 6; i++) {
-        // Nom attendu : tension_prise_1.jpg
+        // Nom : capacite_demarrage_1.jpg
         let imageName = `${currentMeasure}_${comp}_${i}.jpg`;
         let imagePath = `assets/${imageName}`;
 
         let div = document.createElement('div');
-        // Si l'image n'existe pas, onerror la supprime du HTML
         div.innerHTML = `<img src="${imagePath}" class="gallery-img" alt="Aide ${i}" onerror="this.remove()">`;
-        
         gallery.appendChild(div);
     }
 }
@@ -210,6 +218,11 @@ function updateGuideContent() {
         warning.innerHTML = "<i class='fa-solid fa-check'></i> IMPORTANT : HORS TENSION !";
         warning.className = "warning-box bg-safe";
         desc.innerText = "Coupez le courant avant de mesurer.";
+    } else if (currentMeasure === 'capacite') {
+        title.innerText = "Condensateur (Capacité)";
+        warning.innerHTML = "<i class='fa-solid fa-car-battery'></i> DANGER : DÉCHARGER AVANT !";
+        warning.className = "warning-box bg-danger";
+        desc.innerText = "Court-circuitez les bornes du condo avec un tournevis isolé avant de mesurer.";
     }
 }
 
