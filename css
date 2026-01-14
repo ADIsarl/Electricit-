@@ -1,0 +1,62 @@
+:root {
+    --primary: #007bff;
+    --bg: #f4f6f8;
+    --white: #ffffff;
+    --text: #333;
+    --danger: #dc3545;
+    --success: #28a745;
+}
+
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
+
+header { background-color: var(--white); width: 100%; padding: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+nav button { margin: 0 10px; padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold; font-size: 1rem; }
+.active-btn { border-bottom: 3px solid var(--primary); color: var(--primary); }
+
+main { width: 90%; max-width: 500px; margin-top: 20px; padding-bottom: 50px; }
+
+/* Calculateur */
+.input-group { background: var(--white); padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+.input-group label { margin-bottom: 5px; font-weight: 600; color: #555; }
+.input-group input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 1.1rem; }
+
+/* Toggle Switch */
+.toggle-container { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; font-weight: bold; }
+.switch { position: relative; display: inline-block; width: 60px; height: 34px; margin: 0 15px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(26px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+/* Guide Multimètre */
+.hidden-section { display: none; }
+.active-section { display: block; animation: fadeIn 0.5s; }
+.guide-choices { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.guide-choices button { flex: 1; padding: 15px; background: var(--white); border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.guide-choices button:hover { background: #eef; }
+
+.warning-box { padding: 15px; margin: 15px 0; border-radius: 5px; font-weight: bold; text-align: center; }
+.bg-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.bg-safe { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+
+/* Multimètre Image Container */
+.multimeter-container { position: relative; width: 100%; max-width: 300px; margin: 0 auto; }
+#multimeter-img { width: 100%; display: block; border-radius: 10px; }
+.ring {
+    position: absolute;
+    width: 40px; height: 40px;
+    border: 4px solid red; /* Couleur du cercle de sélection */
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    transform: translate(-50%, -50%); /* Pour centrer sur les coordonnées */
+    transition: all 0.5s ease;
+    display: none; /* Caché par défaut */
+    pointer-events: none;
+}
+
+.reset-btn { width: 100%; padding: 15px; background-color: #6c757d; color: white; border: none; border-radius: 8px; margin-top: 10px; cursor: pointer; font-size: 1rem; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
