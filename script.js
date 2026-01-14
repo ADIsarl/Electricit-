@@ -101,10 +101,10 @@ const positions = {
         resistance: { top: 85, left: 30 }, 
         intensite: { top: 25, left: 25 }   
     },
-    yellow: {
-        tension: { top: 85, left: 50 },     
-        resistance: { top: 50, left: 15 },  
-        intensite: { top: 15, left: 50 }   
+   yellow: {
+        tension: { top: 75, left: 22 },     // V~ (en bas à gauche)
+        resistance: { top: 48, left: 12 },  // Ohm (au milieu à gauche)
+        intensite: { top: 12, left: 50 }    // A~ (tout en haut)
     }
 };
 
