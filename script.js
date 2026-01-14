@@ -97,16 +97,16 @@ function showSection(id) {
 // --- GUIDE MULTIMÈTRE ---
 const positions = {
     red: { 
-        tension: { top: 90, left: 35 }, 
-        resistance: { top: 75, left: 20 }, 
-        intensite: { top: 20, left: 15 },
-        capacite: { top: 90, left: 90 } // Position approximative symbole condo
+        tension: { top: 100, left: 35 }, 
+        resistance: { top: 60, left: 15 }, 
+        intensite: { top: 16, left: 12 },
+        capacite: { top: 110, left: 110} // Position approximative symbole condo
     },
     yellow: { 
-        tension: { top: 80, left: 18 }, 
-        resistance: { top: 55, left: 12 }, 
-        intensite: { top: 11, left: 53 },
-        capacite: { top: 38, left: 18 } // Souvent partagé avec Ohm sur les pinces
+        tension: { top: 82, left: 15 }, 
+        resistance: { top: 62, left: 11 }, 
+        intensite: { top: 10, left: 55 },
+        capacite: { top: 20, left: 20 } // Souvent partagé avec Ohm sur les pinces
     }
 };
 const images = { red: 'assets/red_multimeter.png', yellow: 'assets/yellow_multimeter.png' };
