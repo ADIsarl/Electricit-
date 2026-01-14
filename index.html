@@ -38,12 +38,12 @@
             </div>
 
             <div class="input-group">
-                <label><i class="fa-solid fa-lightbulb"></i> Résistance (R) - Ohm</label>
+                <label><i class="fa-solid fa-omega"></i> Résistance (R) - Ohm</label>
                 <input type="number" id="r-val" placeholder="Résistance en Ω">
             </div>
 
             <div class="input-group">
-                <label><i class="fa-solid fa-battery-full"></i> Intensité (I) - Ampère</label>
+                <label><i class="fa-solid fa-bolt"></i> Intensité (I) - Ampère</label>
                 <input type="number" id="i-val" placeholder="Intensité en A">
             </div>
 
@@ -55,7 +55,7 @@
             <div class="result-box">
                 <label><i class="fa-solid fa-ruler-horizontal"></i> Section de câble estimée (Cuivre)</label>
                 <div id="cable-result" class="result-value">---</div>
-                <small>Estimation pour usage standard domestique (NF C 15-100)</small>
+                <small>Estimation usage standard (NF C 15-100)</small>
             </div>
             
             <button class="reset-btn" onclick="resetCalculator()">Réinitialiser</button>
@@ -63,17 +63,19 @@
 
         <section id="guide" class="hidden-section">
             <h2>Que veux-tu mesurer ?</h2>
+            
             <div class="guide-choices">
                 <button onclick="selectMeasurement('tension')"><i class="fa-solid fa-plug"></i> Tension</button>
                 <button onclick="selectMeasurement('intensite')"><i class="fa-solid fa-bolt"></i> Intensité</button>
-                <button onclick="selectMeasurement('resistance')"><i class="fa-solid fa-omega"></i> Résistance</button>
+                <button onclick="selectMeasurement('resistance')"><i class="fa-solid fa-omega"></i> Résist. / Continuité</button>
             </div>
 
             <div id="guide-display" class="hidden-section">
+                
                 <div class="title-row">
                     <h3 id="measure-title"></h3>
                     <button class="info-btn" onclick="toggleInfo()">
-                        <i class="fa-solid fa-circle-question"></i> À quoi ça sert ?
+                        <i class="fa-solid fa-circle-question"></i> Aide
                     </button>
                 </div>
                 
@@ -83,8 +85,17 @@
 
                 <div id="safety-warning" class="warning-box"></div>
                 
+                <div id="component-selector-area" class="component-box hidden-section">
+                    <label>Quel composant tester ?</label>
+                    <select id="component-select" onchange="showComponentImages()">
+                        </select>
+                </div>
+
+                <div id="help-gallery" class="gallery-container">
+                    </div>
+
                 <div class="multimeter-selector">
-                    <label>Choisir le multimètre :</label>
+                    <label>Position Multimètre :</label>
                     <select id="multimeter-select" onchange="updateMultimeterView()">
                         <option value="red">Multimètre Rouge (Rotatif)</option>
                         <option value="yellow">Multimètre Jaune (Pince)</option>
@@ -104,19 +115,15 @@
 
         <section id="formulas" class="hidden-section">
             <h2><i class="fa-solid fa-book-open"></i> Formules de Base</h2>
-            
             <div class="formula-card">
                 <h3>Loi d'Ohm</h3>
                 <div class="formula-big">U = R × I</div>
                 <p>U : Tension (V) | R : Résistance (Ω) | I : Intensité (A)</p>
             </div>
-
             <div class="formula-card">
                 <h3>Puissance (Monophasé)</h3>
                 <div class="formula-big">P = U × I</div>
-                <p>Pour un appareil résistif (cosφ = 1)</p>
             </div>
-
             <div class="formula-card">
                 <h3>Puissance (Triphasé)</h3>
                 <div class="formula-big">P = U × I × √3</div>
