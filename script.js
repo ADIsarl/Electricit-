@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
 let isTriphasé = false;
-let currentMeasure = null;
+let currentMeasure = 'tension'; // Valeur par défaut pour éviter image vide
 
 // --- DOM ELEMENTS ---
 const uInput = document.getElementById('u-val');
@@ -95,21 +95,6 @@ function showSection(id) {
 }
 
 // --- GUIDE MULTIMÈTRE ---
-const positions = {
-    red: { 
-        tension: { top: 98, left: 35 }, 
-        resistance: { top: 62, left: 17 }, 
-        intensite: { top: 16, left: 14 },
-        capacite: { top: 110, left: 110} // Position approximative symbole condo
-    },
-    yellow: { 
-        tension: { top: 81, left: 14 }, 
-        resistance: { top: 62, left: 11 }, 
-        intensite: { top: 10, left: 55 },
-        capacite: { top: 20, left: 20 } // Souvent partagé avec Ohm sur les pinces
-    }
-};
-const images = { red: 'assets/red_multimeter.png', yellow: 'assets/yellow_multimeter.png' };
 
 const explanations = {
     tension: "Vérification de présence de tension. 230V entre Phase/Neutre. 400V entre Phases.",
@@ -118,7 +103,6 @@ const explanations = {
     capacite: "Mesure de la capacité (µF) des condensateurs. Déchargez le condensateur avant mesure !"
 };
 
-// Liste des composants
 const componentOptions = {
     tension: [
         {val: 'prise', label: 'Prise de courant'},
@@ -172,7 +156,6 @@ function updateComponentSelector() {
     }
 }
 
-// AFFICHE LES IMAGES QUAND ON CHOISIT DANS LA LISTE
 function showComponentImages() {
     const comp = document.getElementById('component-select').value;
     const gallery = document.getElementById('help-gallery');
@@ -181,10 +164,8 @@ function showComponentImages() {
     if (!comp) return;
 
     for (let i = 1; i <= 6; i++) {
-        // Nom : capacite_demarrage_1.jpg
         let imageName = `${currentMeasure}_${comp}_${i}.jpg`;
         let imagePath = `assets/${imageName}`;
-
         let div = document.createElement('div');
         div.innerHTML = `<img src="${imagePath}" class="gallery-img" alt="Aide ${i}" onerror="this.remove()">`;
         gallery.appendChild(div);
@@ -226,21 +207,16 @@ function updateGuideContent() {
     }
 }
 
+// --- NOUVELLE FONCTION SIMPLIFIÉE ---
 function updateMultimeterView() {
     if (!currentMeasure) return;
+    
     const select = document.getElementById('multimeter-select');
-    const model = select.value;
+    const model = select.value; // "red" ou "yellow"
     const imgElement = document.getElementById('multimeter-img');
-    const ring = document.getElementById('selector-ring');
     
-    imgElement.src = images[model];
-    const coords = positions[model][currentMeasure];
+    // Construction automatique du nom : "red_tension.png"
+    const imageName = `${model}_${currentMeasure}.png`;
     
-    if (coords) {
-        ring.style.display = 'block';
-        ring.style.top = coords.top + '%';
-        ring.style.left = coords.left + '%';
-    } else {
-        ring.style.display = 'none';
-    }
+    imgElement.src = `assets/${imageName}`;
 }
